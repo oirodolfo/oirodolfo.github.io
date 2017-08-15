@@ -1,3 +1,27 @@
+.secondary-item:before {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    bottom: 6px;
+    left: 6px;
+    content: "";
+    background-color: #000;
+    background-image: inherit;
+    /* background-position: 50%; */
+    background-size: cover;
+    background-repeat: no-repeat;
+    box-sizing: border-box;
+    transition: transform .35s ease;
+    /* z-index: 0; */
+}
+
+.secondary-item:hover:before {
+    transform: scale(1.1);
+}
+
+
+
+
 .header-static {
   position:static;
 }
