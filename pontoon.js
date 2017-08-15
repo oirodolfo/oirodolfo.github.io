@@ -22,7 +22,7 @@ console.warn("pontoon.js | from gist <3");
           unpinned: "slideUp"
         }
     });
-    header.init();
+   // header.init();
 
     // var bttHeadroom = new Headroom(document.getElementById("main-menu"), {
     //     tolerance : 0,
