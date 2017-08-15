@@ -1,7 +1,7 @@
 console.warn("pontoon.js | from gist <3");
 
 
-var logo = document.querySelector('.div-block-15');
+var logo = document.querySelector('.logo-column');
 var h = document.getElementById("main-menu");
 var stuck = false;
 var stickPoint = getDistance();
