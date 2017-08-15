@@ -1,3 +1,13 @@
+.w-dyn-item {
+    transition: background-color ease 200ms;
+    cursor: pointer;
+}
+
+.w-dyn-item:hover {
+    background-color: rgba(0,0,0,0.1);
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.24);
+}
+
 .secondary-item:before {
     position: absolute;
     top: 6px;
