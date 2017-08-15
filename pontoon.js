@@ -17,7 +17,7 @@ window.onscroll = function(e) {
   if ( (distance <= 0) && !stuck) {
     h.classList.remove('header-static')
     h.classList.add('header-fixed')
-    //h.classList.remove('slideDown')
+    h.classList.remove('slideDown')
     //h.classList.add('slideUp')
     
     stuck = true;
