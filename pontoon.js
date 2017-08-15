@@ -1,6 +1,7 @@
 console.warn("pontoon.js | from gist <3");
 
 
+
 var h = document.getElementById("main-menu");
 var stuck = false;
 var stickPoint = getDistance();
@@ -15,6 +16,7 @@ window.onscroll = function(e) {
   var offset = window.pageYOffset;
   
   if ( (distance <= 0) && !stuck) {
+    document.getElementById("header-logo-fixed").display = "flex";
     h.classList.remove('header-static')
     h.classList.add('header-fixed')
     h.classList.remove('slideDown')
@@ -23,7 +25,8 @@ window.onscroll = function(e) {
     stuck = true;
   } else if (stuck && (offset <= stickPoint)){
     stuck = false;
-         h.classList.add('header-static')
+    document.getElementById("header-logo-fixed").display = "none";
+    h.classList.add('header-static')
     h.classList.remove('header-fixed')
     h.classList.remove('slideUp')
     h.classList.add('slideDown')
