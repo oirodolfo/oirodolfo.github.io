@@ -9,6 +9,10 @@
     width: 100%;
     left: 0px;
      box-shadow: 0 4px 17px 0 rgba(0, 0, 0, 0.2);
+  
+      max-width: 1170px;
+    left: 50%;
+    transform: translateX(-50%);
 }
 
 .headroom{transition:transform .25s ease-in-out;will-change:transform}.headroom--pinned{transform:translateY(0)}.headroom--unpinned{transform:translateY(-100%)}
