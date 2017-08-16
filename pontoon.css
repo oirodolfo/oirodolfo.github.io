@@ -38,6 +38,16 @@
         transition: all .5s ease-in-out;
 }
 
+.heading-markets-top:before {
+    position: absolute;
+    content: '';
+    background-color: #3898ec;
+    width: 20%;
+    height: 3px;
+    top: 68px;
+    border-radius: 12px;
+}
+
 
 .main-menu-item:hover:after {
     position: absolute;
