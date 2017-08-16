@@ -26,6 +26,23 @@
 }
 ****/
 
+.video-playlist-collection:hover .video-item-thumbnail:after {
+    position: absolute;
+    content: " ";
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 116, 230, 0.37);
+    color: white;
+    top: 0;
+    left: 0;
+    text-align: center;
+    font: normal normal normal 44px/1 Fontawesome;
+    font-size: inherit;
+    text-rendering: auto;
+    -webkit-font-smoothing: antialiased;
+    vertical-align: middle;
+}
+
 .main-menu-item:before {
     position: absolute;
     z-index: -100;
