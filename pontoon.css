@@ -56,7 +56,13 @@ position: absolute;
 }
 
 
+/*********
+********/
 
+.button--smaller {
+    padding: 6px 25px;
+    font-size: 14px;
+}
 
 
 
