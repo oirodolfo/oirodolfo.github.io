@@ -1,374 +1,403 @@
 <!doctype html>
 <html lang="en">
-<head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover" />
-<meta name="theme-color" content="#050505" />
-<link rel="manifest" href="./manifest.webmanifest" />
-<title>Code Glass</title>
-<style>
-:root{
---bg:#050505;
---text:#fafafa;
---muted:#a1a1aa;
-}
-*{
-box-sizing:border-box;
--webkit-tap-highlight-color:transparent;
-}
-html,body{
-margin:0;
-height:100%;
-overflow:hidden;
-background:
-radial-gradient(circle at top left, rgba(139,92,246,.18), transparent 28rem),
-radial-gradient(circle at bottom right, rgba(59,130,246,.12), transparent 24rem),
-var(--bg);
-color:var(--text);
-font-family:Inter,system-ui,sans-serif;
-touch-action:manipulation;
-}
-body::before{
-content:"";
-position:fixed;
-inset:0;
-pointer-events:none;
-opacity:.06;
-background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='.8'/%3E%3C/svg%3E");
-}
-app-root{
-display:block;
-height:100dvh;
-}
-</style>
-</head>
-<body>
-<app-root></app-root>
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#050505" />
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <title>Code Glass</title>
+    <style>
+      :root {
+        --bg: #050505;
+        --text: #fafafa;
+        --muted: #a1a1aa;
+      }
 
-<script type="module">
-import { LitElement, html, css } from "https://esm.sh/lit@3.3.0";
-import { EditorState } from "https://esm.sh/@codemirror/state@6.5.2";
-import { EditorView, keymap, lineNumbers } from "https://esm.sh/@codemirror/view@6.38.6";
-import { defaultKeymap, history, historyKeymap } from "https://esm.sh/@codemirror/commands@6.8.1";
-import { javascript } from "https://esm.sh/@codemirror/lang-javascript@6.2.4";
-import { json } from "https://esm.sh/@codemirror/lang-json@6.0.2";
-import { html as htmlLang } from "https://esm.sh/@codemirror/lang-html@6.4.9";
-import { css as cssLang } from "https://esm.sh/@codemirror/lang-css@6.3.1";
-import { markdown } from "https://esm.sh/@codemirror/lang-markdown@6.3.4";
-import { go } from "https://esm.sh/@codemirror/lang-go@6.0.2";
-import { StreamLanguage } from "https://esm.sh/@codemirror/language@6.11.3";
-import { shell } from "https://esm.sh/@codemirror/legacy-modes/mode/shell";
-import { lintGutter, linter } from "https://esm.sh/@codemirror/lint@6.8.5";
+      * {
+        box-sizing: border-box;
+        -webkit-tap-highlight-color: transparent;
+      }
 
-const shellLang = StreamLanguage.define(shell);
+      html,
+      body {
+        margin: 0;
+        height: 100%;
+        overflow: hidden;
+        background:
+          radial-gradient(
+            circle at top left,
+            rgba(139, 92, 246, 0.18),
+            transparent 28rem
+          ),
+          radial-gradient(
+            circle at bottom right,
+            rgba(59, 130, 246, 0.12),
+            transparent 24rem
+          ),
+          var(--bg);
+        color: var(--text);
+        font-family: Inter, system-ui, sans-serif;
+        touch-action: manipulation;
+      }
 
-function detectLanguage(code="", fileName=""){
-const lower = fileName.toLowerCase();
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        opacity: 0.06;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='.8'/%3E%3C/svg%3E");
+      }
 
-if(lower.endsWith(".ts")) return "typescript";
-if(lower.endsWith(".js")) return "javascript";
-if(lower.endsWith(".json")) return "json";
-if(lower.endsWith(".html")) return "html";
-if(lower.endsWith(".css")) return "css";
-if(lower.endsWith(".md")) return "markdown";
-if(lower.endsWith(".go")) return "go";
-if(lower.endsWith(".sh") || lower.endsWith(".zsh")) return "shell";
+      app-root {
+        display: block;
+        height: 100dvh;
+      }
+    </style>
+  </head>
 
-if(code.startsWith("#!/usr/bin/env bash")) return "shell";
-if(code.startsWith("#!/usr/bin/env zsh")) return "shell";
-if(code.includes("package main")) return "go";
+  <body>
+    <app-root></app-root>
 
-return "javascript";
-}
+    <script type="module">
+      import { LitElement, html, css } from "https://esm.sh/lit@3.3.0";
+      import { EditorState } from "https://esm.sh/@codemirror/state@6.5.2";
+      import {
+        EditorView,
+        keymap,
+        lineNumbers,
+      } from "https://esm.sh/@codemirror/view@6.38.6";
+      import {
+        defaultKeymap,
+        history,
+        historyKeymap,
+      } from "https://esm.sh/@codemirror/commands@6.8.1";
+      import { javascript } from "https://esm.sh/@codemirror/lang-javascript@6.2.4";
+      import { json } from "https://esm.sh/@codemirror/lang-json@6.0.2";
+      import { html as htmlLang } from "https://esm.sh/@codemirror/lang-html@6.4.9";
+      import { css as cssLang } from "https://esm.sh/@codemirror/lang-css@6.3.1";
+      import { markdown } from "https://esm.sh/@codemirror/lang-markdown@6.3.4";
+      import { go } from "https://esm.sh/@codemirror/lang-go@6.0.2";
+      import { StreamLanguage } from "https://esm.sh/@codemirror/language@6.11.3";
+      import { shell } from "https://esm.sh/@codemirror/legacy-modes/mode/shell";
+      import {
+        lintGutter,
+        linter,
+      } from "https://esm.sh/@codemirror/lint@6.8.5";
 
-function getLanguageExtension(language){
-switch(language){
-case "typescript":
-return javascript({typescript:true});
-case "javascript":
-return javascript();
-case "json":
-return json();
-case "html":
-return htmlLang();
-case "css":
-return cssLang();
-case "markdown":
-return markdown();
-case "go":
-return go();
-case "shell":
-return shellLang;
-default:
-return javascript();
-}
-}
+      const shellLang = StreamLanguage.define(shell);
 
-const THEME = EditorView.theme({
-"&":{height:"100%"},
-"&.cm-editor":{
-height:"100%",
-background:"#0a0a0a",
-color:"#fafafa"
-},
-".cm-scroller":{
-overflow:"auto",
-fontFamily:"ui-monospace,monospace",
-fontSize:"13px"
-},
-".cm-gutters":{
-background:"rgba(255,255,255,.03)",
-color:"#71717a",
-borderRight:"1px solid rgba(255,255,255,.08)"
-}
-});
+      function detectLanguage(code = "", fileName = "") {
+        const lower = fileName.toLowerCase();
 
-const SIMPLE_LINTER = linter(view => {
-const diagnostics = [];
-const text = view.state.doc.toString();
+        if (lower.endsWith(".ts")) return "typescript";
+        if (lower.endsWith(".js")) return "javascript";
+        if (lower.endsWith(".json")) return "json";
+        if (lower.endsWith(".html")) return "html";
+        if (lower.endsWith(".css")) return "css";
+        if (lower.endsWith(".md")) return "markdown";
+        if (lower.endsWith(".go")) return "go";
+        if (lower.endsWith(".sh") || lower.endsWith(".zsh")) return "shell";
 
-if(text.includes("console.log")){
-diagnostics.push({
-from:text.indexOf("console.log"),
-to:text.indexOf("console.log")+11,
-severity:"warning",
-message:"console.log detected"
-});
-}
+        if (code.startsWith("#!/usr/bin/env bash")) return "shell";
+        if (code.startsWith("#!/usr/bin/env zsh")) return "shell";
+        if (code.includes("package main")) return "go";
 
-return diagnostics;
-});
+        return "javascript";
+      }
 
-class AppRoot extends LitElement{
-static styles = css\`
-:host{
-display:block;
-height:100%;
-}
-.layout{
-height:100%;
-display:grid;
-grid-template-rows:auto 1fr auto;
-gap:12px;
-padding:16px;
-}
-.hero{
-border:1px solid rgba(255,255,255,.08);
-background:rgba(255,255,255,.04);
-backdrop-filter:blur(18px);
-border-radius:24px;
-padding:18px;
-}
-h1{
-margin:0;
-font-size:clamp(2rem,8vw,4rem);
-letter-spacing:-.08em;
-}
-p{
-color:#a1a1aa;
-}
-.toolbar{
-display:flex;
-gap:8px;
-flex-wrap:wrap;
-}
-button,input{
-min-height:44px;
-border-radius:14px;
-border:1px solid rgba(255,255,255,.08);
-background:rgba(255,255,255,.06);
-color:white;
-padding:0 14px;
-}
-input{
-flex:1;
-}
-.editor{
-overflow:hidden;
-border-radius:24px;
-border:1px solid rgba(255,255,255,.08);
-}
-#editor{
-height:100%;
-}
-.footer{
-font-size:.85rem;
-color:#71717a;
-}
-\`;
+      function getLanguageExtension(language) {
+        switch (language) {
+          case "typescript":
+            return javascript({ typescript: true });
+          case "javascript":
+            return javascript();
+          case "json":
+            return json();
+          case "html":
+            return htmlLang();
+          case "css":
+            return cssLang();
+          case "markdown":
+            return markdown();
+          case "go":
+            return go();
+          case "shell":
+            return shellLang;
+          default:
+            return javascript();
+        }
+      }
 
-static properties = {
-status:{state:true},
-language:{state:true}
-};
+      const THEME = EditorView.theme({
+        "&": { height: "100%" },
+        "&.cm-editor": {
+          height: "100%",
+          background: "#0a0a0a",
+          color: "#fafafa",
+        },
+        ".cm-scroller": {
+          overflow: "auto",
+          fontFamily: "ui-monospace,monospace",
+          fontSize: "13px",
+        },
+        ".cm-gutters": {
+          background: "rgba(255,255,255,.03)",
+          color: "#71717a",
+          borderRight: "1px solid rgba(255,255,255,.08)",
+        },
+      });
 
-constructor(){
-super();
-this.status = "Ready";
-this.language = "javascript";
-}
+      const SIMPLE_LINTER = linter((view) => {
+        const diagnostics = [];
+        const text = view.state.doc.toString();
 
-render(){
-return html\`
-<div class="layout">
-<div class="hero">
-<h1>Code Glass</h1>
-<p>Offline-first CodeMirror 6 playground.</p>
+        if (text.includes("console.log")) {
+          diagnostics.push({
+            from: text.indexOf("console.log"),
+            to: text.indexOf("console.log") + 11,
+            severity: "warning",
+            message: "console.log detected",
+          });
+        }
 
-<div class="toolbar">
-<button @click=\${this.loadSample}>🧪 Sample</button>
-<button @click=\${this.copyCode}>📋 Copy</button>
-<button @click=\${this.openFile}>📄 File</button>
+        return diagnostics;
+      });
 
-<input id="urlInput" placeholder="https://raw.githubusercontent.com/..."/>
+      class AppRoot extends LitElement {
+        static styles = css`
+          :host {
+            display: block;
+            height: 100%;
+          }
+          .layout {
+            height: 100%;
+            display: grid;
+            grid-template-rows: auto 1fr auto;
+            gap: 12px;
+            padding: 16px;
+          }
+          .hero {
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, 0.04);
+            backdrop-filter: blur(18px);
+            border-radius: 24px;
+            padding: 18px;
+          }
+          h1 {
+            margin: 0;
+            font-size: clamp(2rem, 8vw, 4rem);
+            letter-spacing: -0.08em;
+          }
+          p {
+            color: #a1a1aa;
+          }
+          .toolbar {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+          }
+          button,
+          input {
+            min-height: 44px;
+            border-radius: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, 0.06);
+            color: white;
+            padding: 0 14px;
+          }
+          input {
+            flex: 1;
+          }
+          .editor {
+            overflow: hidden;
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+          }
+          #editor {
+            height: 100%;
+          }
+          .footer {
+            font-size: 0.85rem;
+            color: #71717a;
+          }
+        `;
 
-<button @click=\${this.fetchRemote}>🌐 Fetch</button>
+        static properties = {
+          status: { state: true },
+          language: { state: true },
+        };
 
-<input hidden id="fileInput" type="file" @change=\${this.onFileChange}/>
-</div>
-</div>
+        constructor() {
+          super();
+          this.status = "Ready";
+          this.language = "javascript";
+        }
 
-<div class="editor">
-<div id="editor"></div>
-</div>
+        render() {
+          return html`
+            <div class="layout">
+              <div class="hero">
+                <h1>Code Glass</h1>
+                <p>Offline-first CodeMirror 6 playground.</p>
 
-<div class="footer">
-\${this.status} · \${this.language}
-</div>
-</div>
-\`;
-}
+                <div class="toolbar">
+                  <button @click=${this.loadSample}>🧪 Sample</button>
+                  <button @click=${this.copyCode}>📋 Copy</button>
+                  <button @click=${this.openFile}>📄 File</button>
 
-firstUpdated(){
-this.blockZoom();
-this.setupEditor();
-this.registerSW();
-}
+                  <input
+                    id="urlInput"
+                    placeholder="https://raw.githubusercontent.com/..."
+                  />
 
-blockZoom(){
-document.addEventListener("gesturestart", e => e.preventDefault());
-document.addEventListener("gesturechange", e => e.preventDefault());
-document.addEventListener("gestureend", e => e.preventDefault());
-}
+                  <button @click=${this.fetchRemote}>🌐 Fetch</button>
 
-setupEditor(code='console.log("hello")'){
-this.language = detectLanguage(code);
+                  <input
+                    hidden
+                    id="fileInput"
+                    type="file"
+                    @change=${this.onFileChange}
+                  />
+                </div>
+              </div>
 
-this.editorView = new EditorView({
-parent:this.renderRoot.querySelector("#editor"),
-state:EditorState.create({
-doc:code,
-extensions:[
-lineNumbers(),
-history(),
-keymap.of([
-...defaultKeymap,
-...historyKeymap
-]),
-THEME,
-lintGutter(),
-SIMPLE_LINTER,
-getLanguageExtension(this.language)
-]
-})
-});
-}
+              <div class="editor">
+                <div id="editor"></div>
+              </div>
 
-replaceEditor(code, fileName=""){
-this.language = detectLanguage(code, fileName);
+              <div class="footer">${this.status} · ${this.language}</div>
+            </div>
+          `;
+        }
 
-this.editorView.destroy();
+        firstUpdated() {
+          this.blockZoom();
+          this.setupEditor();
+          this.registerSW();
+        }
 
-this.renderRoot.querySelector("#editor").innerHTML = "";
+        blockZoom() {
+          document.addEventListener("gesturestart", (e) => e.preventDefault());
+          document.addEventListener("gesturechange", (e) => e.preventDefault());
+          document.addEventListener("gestureend", (e) => e.preventDefault());
+        }
 
-this.editorView = new EditorView({
-parent:this.renderRoot.querySelector("#editor"),
-state:EditorState.create({
-doc:code,
-extensions:[
-lineNumbers(),
-history(),
-keymap.of([
-...defaultKeymap,
-...historyKeymap
-]),
-THEME,
-lintGutter(),
-SIMPLE_LINTER,
-getLanguageExtension(this.language)
-]
-})
-});
-}
+        setupEditor(code = 'console.log("hello")') {
+          this.language = detectLanguage(code);
 
-loadSample(){
-const sample = '#!/usr/bin/env zsh\n\necho "hello"';
+          this.editorView = new EditorView({
+            parent: this.renderRoot.querySelector("#editor"),
+            state: EditorState.create({
+              doc: code,
+              extensions: [
+                lineNumbers(),
+                history(),
+                keymap.of([...defaultKeymap, ...historyKeymap]),
+                THEME,
+                lintGutter(),
+                SIMPLE_LINTER,
+                getLanguageExtension(this.language),
+              ],
+            }),
+          });
+        }
 
-this.replaceEditor(sample, "sample.zsh");
+        replaceEditor(code, fileName = "") {
+          this.language = detectLanguage(code, fileName);
 
-this.status = "Sample loaded";
-}
+          this.editorView.destroy();
 
-async copyCode(){
-await navigator.clipboard.writeText(
-this.editorView.state.doc.toString()
-);
+          this.renderRoot.querySelector("#editor").innerHTML = "";
 
-this.status = "Copied";
-}
+          this.editorView = new EditorView({
+            parent: this.renderRoot.querySelector("#editor"),
+            state: EditorState.create({
+              doc: code,
+              extensions: [
+                lineNumbers(),
+                history(),
+                keymap.of([...defaultKeymap, ...historyKeymap]),
+                THEME,
+                lintGutter(),
+                SIMPLE_LINTER,
+                getLanguageExtension(this.language),
+              ],
+            }),
+          });
+        }
 
-openFile(){
-this.renderRoot.querySelector("#fileInput").click();
-}
+        loadSample() {
+          const sample = '#!/usr/bin/env zsh\n\necho "hello"';
 
-async onFileChange(event){
-const file = event.target.files?.[0];
+          this.replaceEditor(sample, "sample.zsh");
 
-if(!file){
-return;
-}
+          this.status = "Sample loaded";
+        }
 
-const text = await file.text();
+        async copyCode() {
+          await navigator.clipboard.writeText(
+            this.editorView.state.doc.toString(),
+          );
 
-this.replaceEditor(text, file.name);
+          this.status = "Copied";
+        }
 
-this.status = \`Loaded \${file.name}\`;
-}
+        openFile() {
+          this.renderRoot.querySelector("#fileInput").click();
+        }
 
-async fetchRemote(){
-const input = this.renderRoot.querySelector("#urlInput");
+        async onFileChange(event) {
+          const file = event.target.files?.[0];
 
-if(!input.value){
-return;
-}
+          if (!file) {
+            return;
+          }
 
-try{
-const response = await fetch(input.value);
-const text = await response.text();
+          const text = await file.text();
 
-this.replaceEditor(text, input.value);
+          this.replaceEditor(text, file.name);
 
-this.status = "Remote file loaded";
-}catch(error){
-this.status = error.message;
-}
-}
+          this.status = `Loaded ${file.name}`;
+        }
 
-async registerSW(){
-if(!("serviceWorker" in navigator)){
-return;
-}
+        async fetchRemote() {
+          const input = this.renderRoot.querySelector("#urlInput");
 
-try{
-await navigator.serviceWorker.register("./sw.js");
-this.status = "Offline ready";
-}catch(error){
-this.status = error.message;
-}
-}
-}
+          if (!input.value) {
+            return;
+          }
 
-customElements.define("app-root", AppRoot);
-</script>
-</body>
+          try {
+            const response = await fetch(input.value);
+            const text = await response.text();
+
+            this.replaceEditor(text, input.value);
+
+            this.status = "Remote file loaded";
+          } catch (error) {
+            this.status = error.message;
+          }
+        }
+
+        async registerSW() {
+          if (!("serviceWorker" in navigator)) {
+            return;
+          }
+
+          try {
+            await navigator.serviceWorker.register("./sw.js");
+            this.status = "Offline ready";
+          } catch (error) {
+            this.status = error.message;
+          }
+        }
+      }
+
+      customElements.define("app-root", AppRoot);
+    </script>
+  </body>
 </html>
