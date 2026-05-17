@@ -1,1 +1,830 @@
-Hello World
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#171827" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="Code Pretty" />
+  <title>Code Pretty</title>
+
+  <style>
+    :root {
+      --accent: #a78bfa;
+      --bg: #10111d;
+      --panel: rgba(255, 255, 255, 0.07);
+      --panel-strong: rgba(255, 255, 255, 0.11);
+      --text: #f5f3ff;
+      --muted: #a5a7bd;
+      --border: rgba(255, 255, 255, 0.14);
+      --shadow: 0 24px 80px rgba(0, 0, 0, 0.38);
+      --radius: 24px;
+
+      --code-bg: #141625;
+      --code-text: #f6f0ff;
+      --code-keyword: #c4a7ff;
+      --code-string: #a6e3a1;
+      --code-comment: #7f849c;
+      --code-number: #f9d38c;
+      --code-variable: #89dceb;
+      --code-function: #91d7ff;
+      --code-operator: #f5c2e7;
+      --code-type: #f2cdcd;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      min-height: 100%;
+      margin: 0;
+      background:
+        radial-gradient(circle at top left, rgba(167, 139, 250, 0.28), transparent 34rem),
+        radial-gradient(circle at bottom right, rgba(137, 220, 235, 0.14), transparent 28rem),
+        var(--bg);
+      color: var(--text);
+      font-family:
+        ui-sans-serif,
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+    }
+
+    body {
+      padding: max(18px, env(safe-area-inset-top)) 14px max(24px, env(safe-area-inset-bottom));
+    }
+
+    button,
+    select,
+    textarea {
+      font: inherit;
+    }
+
+    .app {
+      width: min(1120px, 100%);
+      margin: 0 auto;
+      display: grid;
+      gap: 14px;
+    }
+
+    .hero {
+      padding: 18px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.11), rgba(255, 255, 255, 0.045));
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+    }
+
+    .title {
+      margin: 0;
+      font-size: clamp(1.7rem, 7vw, 3.3rem);
+      letter-spacing: -0.07em;
+      line-height: 0.92;
+    }
+
+    .subtitle {
+      margin: 12px 0 0;
+      color: var(--muted);
+      line-height: 1.5;
+      max-width: 68ch;
+    }
+
+    .toolbar {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      background: var(--panel);
+      backdrop-filter: blur(18px);
+    }
+
+    .control,
+    .button {
+      min-height: 44px;
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      color: var(--text);
+      background: var(--panel-strong);
+      outline: none;
+    }
+
+    .control {
+      padding: 0 14px;
+    }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 0 14px;
+      cursor: pointer;
+      transition:
+        transform 140ms ease,
+        border-color 140ms ease,
+        background 140ms ease;
+    }
+
+    .button:active {
+      transform: scale(0.98);
+    }
+
+    .button.primary {
+      border-color: color-mix(in srgb, var(--accent), white 18%);
+      background: linear-gradient(135deg, color-mix(in srgb, var(--accent), transparent 14%), rgba(255, 255, 255, 0.11));
+      color: white;
+      font-weight: 760;
+    }
+
+    .button.ghost {
+      color: var(--muted);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+      gap: 14px;
+    }
+
+    @media (max-width: 840px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .card {
+      min-width: 0;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--panel);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+      overflow: hidden;
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .card-title {
+      margin: 0;
+      font-size: 0.92rem;
+      color: var(--muted);
+      font-weight: 760;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+    }
+
+    .editor-input {
+      width: 100%;
+      min-height: 58vh;
+      resize: vertical;
+      border: 0;
+      outline: none;
+      padding: 16px;
+      color: var(--code-text);
+      background: var(--code-bg);
+      font-family:
+        ui-monospace,
+        SFMono-Regular,
+        Menlo,
+        Monaco,
+        Consolas,
+        "Liberation Mono",
+        monospace;
+      font-size: 13px;
+      line-height: 1.58;
+      tab-size: 2;
+      white-space: pre;
+      overflow: auto;
+    }
+
+    .editor-host {
+      min-height: 58vh;
+      background: var(--code-bg);
+      overflow: auto;
+    }
+
+    .ProseMirror {
+      min-height: 58vh;
+      padding: 16px;
+      outline: none;
+      color: var(--code-text);
+      font-family:
+        ui-monospace,
+        SFMono-Regular,
+        Menlo,
+        Monaco,
+        Consolas,
+        "Liberation Mono",
+        monospace;
+      font-size: 13px;
+      line-height: 1.58;
+      tab-size: 2;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .ProseMirror pre {
+      margin: 0;
+      white-space: pre-wrap;
+    }
+
+    .pm-code-keyword {
+      color: var(--code-keyword);
+      font-weight: 760;
+    }
+
+    .pm-code-string {
+      color: var(--code-string);
+    }
+
+    .pm-code-comment {
+      color: var(--code-comment);
+      font-style: italic;
+    }
+
+    .pm-code-number {
+      color: var(--code-number);
+    }
+
+    .pm-code-variable {
+      color: var(--code-variable);
+    }
+
+    .pm-code-function {
+      color: var(--code-function);
+    }
+
+    .pm-code-operator {
+      color: var(--code-operator);
+    }
+
+    .pm-code-type {
+      color: var(--code-type);
+      font-weight: 680;
+    }
+
+    .status {
+      min-height: 28px;
+      padding: 0 4px;
+      color: var(--muted);
+      font-size: 0.88rem;
+      line-height: 1.45;
+    }
+
+    .status strong {
+      color: var(--text);
+    }
+
+    .hidden-file {
+      display: none;
+    }
+  </style>
+</head>
+
+<body>
+  <main class="app">
+    <section class="hero">
+      <h1 class="title">Code Pretty</h1>
+      <p class="subtitle">
+        Paste code, format what Prettier supports, then render it inside ProseMirror with lightweight syntax highlighting.
+      </p>
+    </section>
+
+    <section class="toolbar">
+      <select id="language" class="control" aria-label="Language">
+        <option value="typescript">TypeScript</option>
+        <option value="go">Go</option>
+        <option value="bash">Bash</option>
+        <option value="zsh">Zsh</option>
+      </select>
+
+      <button id="formatButton" class="button primary" type="button">✨ Format + Highlight</button>
+      <button id="copyButton" class="button" type="button">📋 Copy</button>
+      <button id="sampleButton" class="button ghost" type="button">🧪 Sample</button>
+      <label class="button ghost" for="fileInput">📄 Open file</label>
+      <input id="fileInput" class="hidden-file" type="file" />
+    </section>
+
+    <section class="grid">
+      <article class="card">
+        <header class="card-header">
+          <h2 class="card-title">Input</h2>
+        </header>
+        <textarea id="sourceInput" class="editor-input" spellcheck="false"></textarea>
+      </article>
+
+      <article class="card">
+        <header class="card-header">
+          <h2 class="card-title">ProseMirror Output</h2>
+        </header>
+        <div id="editor" class="editor-host"></div>
+      </article>
+    </section>
+
+    <p id="status" class="status">Ready.</p>
+  </main>
+
+  <script type="module">
+    import prettier from "https://esm.sh/prettier@3.6.2/standalone";
+    import prettierPluginBabel from "https://esm.sh/prettier@3.6.2/plugins/babel";
+    import prettierPluginEstree from "https://esm.sh/prettier@3.6.2/plugins/estree";
+    import prettierPluginTypescript from "https://esm.sh/prettier@3.6.2/plugins/typescript";
+
+    import { EditorState, Plugin } from "https://esm.sh/prosemirror-state@1.4.3";
+    import { EditorView, Decoration, DecorationSet } from "https://esm.sh/prosemirror-view@1.41.0";
+    import { Schema } from "https://esm.sh/prosemirror-model@1.25.0";
+    import { schema as basicSchema } from "https://esm.sh/prosemirror-schema-basic@1.2.4";
+    import { history, undo, redo } from "https://esm.sh/prosemirror-history@1.4.1";
+    import { keymap } from "https://esm.sh/prosemirror-keymap@1.2.3";
+    import { baseKeymap } from "https://esm.sh/prosemirror-commands@1.7.1";
+
+    const DEFAULT_CODE = `type User = {
+  id: string
+  name: string
+  active?: boolean
+}
+
+export async function greet(user: User) {
+  if (!user.active) {
+    return "sleeping dragon"
+  }
+
+  return \`hello, \${user.name}\`
+}
+`;
+
+    const sourceInput = document.querySelector("#sourceInput");
+    const languageInput = document.querySelector("#language");
+    const formatButton = document.querySelector("#formatButton");
+    const copyButton = document.querySelector("#copyButton");
+    const sampleButton = document.querySelector("#sampleButton");
+    const fileInput = document.querySelector("#fileInput");
+    const statusElement = document.querySelector("#status");
+    const editorElement = document.querySelector("#editor");
+
+    const codeSchema = new Schema({
+      nodes: basicSchema.spec.nodes,
+      marks: basicSchema.spec.marks,
+    });
+
+    let activeLanguage = "typescript";
+
+    const highlightPlugin = new Plugin({
+      props: {
+        decorations(state) {
+          return createHighlightDecorations(state.doc, activeLanguage);
+        },
+      },
+    });
+
+    const editorView = new EditorView(editorElement, {
+      state: EditorState.create({
+        schema: codeSchema,
+        doc: createCodeDocument(DEFAULT_CODE),
+        plugins: [
+          history(),
+          keymap({
+            "Mod-z": undo,
+            "Mod-y": redo,
+            "Shift-Mod-z": redo,
+          }),
+          keymap(baseKeymap),
+          highlightPlugin,
+        ],
+      }),
+    });
+
+    sourceInput.value = DEFAULT_CODE;
+
+    formatButton.addEventListener("click", async () => {
+      await formatAndRender();
+    });
+
+    sampleButton.addEventListener("click", () => {
+      const language = languageInput.value;
+      sourceInput.value = getSampleCode(language);
+      setStatus(`Loaded <strong>${language}</strong> sample.`);
+      renderCode(sourceInput.value);
+    });
+
+    copyButton.addEventListener("click", async () => {
+      await navigator.clipboard.writeText(getEditorCode());
+      setStatus("Copied formatted code to clipboard.");
+    });
+
+    languageInput.addEventListener("change", () => {
+      activeLanguage = languageInput.value;
+      sourceInput.value = getSampleCode(activeLanguage);
+      renderCode(sourceInput.value);
+      setStatus(`Language changed to <strong>${activeLanguage}</strong>.`);
+    });
+
+    fileInput.addEventListener("change", async () => {
+      const file = fileInput.files?.[0];
+
+      if (!file) return;
+
+      sourceInput.value = await file.text();
+      inferLanguageFromFileName(file.name);
+      await formatAndRender();
+    });
+
+    /**
+     * Formats supported languages and updates the ProseMirror document.
+     *
+     * @returns {Promise<void>}
+     */
+    async function formatAndRender() {
+      const language = languageInput.value;
+      activeLanguage = language;
+
+      try {
+        const formatted = await formatCode(sourceInput.value, language);
+        sourceInput.value = formatted;
+        renderCode(formatted);
+
+        const mode = language === "typescript" ? "Prettier" : "fallback";
+        setStatus(`Formatted with <strong>${mode}</strong> and highlighted as <strong>${language}</strong>.`);
+      } catch (error) {
+        renderCode(sourceInput.value);
+        setStatus(`Could not format, but highlight still ran. ${escapeHtml(error.message)}`);
+      }
+    }
+
+    /**
+     * Uses Prettier for TypeScript and a safe fallback for shell-like languages.
+     *
+     * @param {string} code
+     * @param {string} language
+     * @returns {Promise<string>}
+     */
+    async function formatCode(code, language) {
+      if (language !== "typescript") {
+        return softNormalizeCode(code);
+      }
+
+      return prettier.format(code, {
+        parser: "typescript",
+        plugins: [
+          prettierPluginBabel,
+          prettierPluginEstree,
+          prettierPluginTypescript,
+        ],
+        semi: true,
+        singleQuote: false,
+        trailingComma: "all",
+        printWidth: 92,
+      });
+    }
+
+    /**
+     * Updates the editor document with a single code block.
+     *
+     * @param {string} code
+     * @returns {void}
+     */
+    function renderCode(code) {
+      const nextState = EditorState.create({
+        schema: codeSchema,
+        doc: createCodeDocument(code),
+        plugins: editorView.state.plugins,
+      });
+
+      editorView.updateState(nextState);
+    }
+
+    /**
+     * Creates a ProseMirror document containing one code block.
+     *
+     * @param {string} code
+     * @returns {import("https://esm.sh/prosemirror-model@1.25.0").Node}
+     */
+    function createCodeDocument(code) {
+      return codeSchema.nodes.doc.create(null, [
+        codeSchema.nodes.code_block.create(null, codeSchema.text(String(code || ""))),
+      ]);
+    }
+
+    /**
+     * Reads the current text stored inside the ProseMirror editor.
+     *
+     * @returns {string}
+     */
+    function getEditorCode() {
+      return editorView.state.doc.textBetween(0, editorView.state.doc.content.size, "\n");
+    }
+
+    /**
+     * Creates inline ProseMirror decorations for syntax tokens.
+     *
+     * @param {import("https://esm.sh/prosemirror-model@1.25.0").Node} doc
+     * @param {string} language
+     * @returns {DecorationSet}
+     */
+    function createHighlightDecorations(doc, language) {
+      const decorations = [];
+
+      doc.descendants((node, position) => {
+        if (node.type.name !== "code_block") {
+          return true;
+        }
+
+        const text = node.textContent;
+        const offset = position + 1;
+
+        for (const token of tokenizeCode(text, language)) {
+          decorations.push(
+            Decoration.inline(offset + token.start, offset + token.end, {
+              class: token.className,
+            }),
+          );
+        }
+
+        return false;
+      });
+
+      return DecorationSet.create(doc, decorations);
+    }
+
+    /**
+     * Tokenizes code using a small language-aware fallback.
+     *
+     * @param {string} code
+     * @param {string} language
+     * @returns {{ start: number, end: number, className: string }[]}
+     */
+    function tokenizeCode(code, language) {
+      const tokens = [];
+      const occupied = new Uint8Array(code.length);
+
+      const patterns = getLanguagePatterns(language);
+
+      for (const pattern of patterns) {
+        pattern.regex.lastIndex = 0;
+
+        for (const match of code.matchAll(pattern.regex)) {
+          const value = match[0];
+          const start = match.index ?? 0;
+          const end = start + value.length;
+
+          if (!value || hasOverlap(occupied, start, end)) {
+            continue;
+          }
+
+          markOccupied(occupied, start, end);
+          tokens.push({
+            start,
+            end,
+            className: pattern.className,
+          });
+        }
+      }
+
+      return tokens.sort((left, right) => left.start - right.start);
+    }
+
+    /**
+     * Returns syntax patterns from most specific to most general.
+     *
+     * @param {string} language
+     * @returns {{ regex: RegExp, className: string }[]}
+     */
+    function getLanguagePatterns(language) {
+      const common = [
+        {
+          regex: /("(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|`(?:\\.|[^`\\])*`)/g,
+          className: "pm-code-string",
+        },
+        {
+          regex: /(\/\/[^\n]*|#[^\n]*)/g,
+          className: "pm-code-comment",
+        },
+        {
+          regex: /\b(\d+(?:\.\d+)?)\b/g,
+          className: "pm-code-number",
+        },
+      ];
+
+      if (language === "typescript") {
+        return [
+          ...common,
+          {
+            regex: /\b(type|interface|class|enum|namespace|abstract|implements|extends|readonly|private|protected|public|static|const|let|var|function|return|if|else|for|while|do|switch|case|break|continue|import|export|from|as|async|await|new|throw|try|catch|finally|true|false|null|undefined|void|never|unknown|any|string|number|boolean)\b/g,
+            className: "pm-code-keyword",
+          },
+          {
+            regex: /\b([A-Z][A-Za-z0-9_]*)(?=\b)/g,
+            className: "pm-code-type",
+          },
+          {
+            regex: /\b([A-Za-z_$][A-Za-z0-9_$]*)(?=\s*\()/g,
+            className: "pm-code-function",
+          },
+        ];
+      }
+
+      if (language === "go") {
+        return [
+          ...common,
+          {
+            regex: /\b(package|import|func|return|if|else|for|range|go|defer|select|case|switch|struct|interface|type|var|const|map|chan|true|false|nil|string|int|int64|float64|bool|error)\b/g,
+            className: "pm-code-keyword",
+          },
+          {
+            regex: /\b([A-Z][A-Za-z0-9_]*)(?=\b)/g,
+            className: "pm-code-type",
+          },
+          {
+            regex: /\b([A-Za-z_][A-Za-z0-9_]*)(?=\s*\()/g,
+            className: "pm-code-function",
+          },
+        ];
+      }
+
+      return [
+        ...common,
+        {
+          regex: /\b(if|then|else|elif|fi|for|while|until|do|done|case|esac|function|local|typeset|declare|export|return|exit|source|alias|unalias|autoload|zstyle|bindkey|setopt|unsetopt)\b/g,
+          className: "pm-code-keyword",
+        },
+        {
+          regex: /(\$[A-Za-z_][A-Za-z0-9_]*|\$\{[^}]+\}|\$\?|\$#|\$@|\$\*)/g,
+          className: "pm-code-variable",
+        },
+        {
+          regex: /(&&|\|\||==|!=|=~|[|&;<>])/g,
+          className: "pm-code-operator",
+        },
+      ];
+    }
+
+    /**
+     * Checks whether a token range already belongs to a stronger token.
+     *
+     * @param {Uint8Array} occupied
+     * @param {number} start
+     * @param {number} end
+     * @returns {boolean}
+     */
+    function hasOverlap(occupied, start, end) {
+      for (let index = start; index < end; index += 1) {
+        if (occupied[index]) {
+          return true;
+        }
+      }
+
+      return false;
+    }
+
+    /**
+     * Marks a token range as already decorated.
+     *
+     * @param {Uint8Array} occupied
+     * @param {number} start
+     * @param {number} end
+     * @returns {void}
+     */
+    function markOccupied(occupied, start, end) {
+      for (let index = start; index < end; index += 1) {
+        occupied[index] = 1;
+      }
+    }
+
+    /**
+     * Light normalization for languages that Prettier does not format natively here.
+     *
+     * @param {string} code
+     * @returns {string}
+     */
+    function softNormalizeCode(code) {
+      return String(code)
+        .replace(/\r\n/g, "\n")
+        .replace(/[ \t]+$/gm, "")
+        .trim()
+        .concat("\n");
+    }
+
+    /**
+     * Infers the selected language from a file name.
+     *
+     * @param {string} fileName
+     * @returns {void}
+     */
+    function inferLanguageFromFileName(fileName) {
+      const lower = fileName.toLowerCase();
+
+      if (lower.endsWith(".go")) {
+        languageInput.value = "go";
+      } else if (lower.endsWith(".zsh")) {
+        languageInput.value = "zsh";
+      } else if (lower.endsWith(".sh") || lower.endsWith(".bash")) {
+        languageInput.value = "bash";
+      } else {
+        languageInput.value = "typescript";
+      }
+
+      activeLanguage = languageInput.value;
+    }
+
+    /**
+     * Returns sample code for the chosen language.
+     *
+     * @param {string} language
+     * @returns {string}
+     */
+    function getSampleCode(language) {
+      if (language === "go") {
+        return `package main
+
+import "fmt"
+
+type User struct {
+  Name string
+  Active bool
+}
+
+func greet(user User) string {
+  if !user.Active {
+    return "sleeping dragon"
+  }
+
+  return fmt.Sprintf("hello, %s", user.Name)
+}
+`;
+      }
+
+      if (language === "bash") {
+        return `#!/usr/bin/env bash
+
+name="\${1:-Rod}"
+
+if [[ -z "$name" ]]; then
+  echo "missing name"
+  exit 1
+fi
+
+echo "hello, $name"
+`;
+      }
+
+      if (language === "zsh") {
+        return `#!/usr/bin/env zsh
+
+typeset -g CURUPIRA_STATUS="ready"
+
+curupira::hello() {
+  local name="\${1:-Rod}"
+
+  if [[ -z "$name" ]]; then
+    print -r -- "missing name"
+    return 1
+  fi
+
+  print -r -- "hello, $name"
+}
+`;
+      }
+
+      return DEFAULT_CODE;
+    }
+
+    /**
+     * Updates the visible status line.
+     *
+     * @param {string} message
+     * @returns {void}
+     */
+    function setStatus(message) {
+      statusElement.innerHTML = message;
+    }
+
+    /**
+     * Escapes text before putting it into a status message.
+     *
+     * @param {string} value
+     * @returns {string}
+     */
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;");
+    }
+  </script>
+</body>
+</html>
