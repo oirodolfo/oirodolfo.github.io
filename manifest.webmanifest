@@ -1,0 +1,11 @@
+{
+  "name": "Code Pretty Offline",
+  "short_name": "Code Pretty",
+  "description": "Offline code formatter and syntax highlighter for Safari Home Screen.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#10111d",
+  "theme_color": "#171827",
+  "icons": []
+}
