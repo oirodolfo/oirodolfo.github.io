@@ -1,525 +1,374 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <meta name="theme-color" content="#171827" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-title" content="Code Pretty" />
-  <link rel="manifest" href="./manifest.webmanifest" />
-  <title>Code Pretty Offline</title>
-  <style>
-    :root {
-      --accent: #a78bfa;
-      --bg: #10111d;
-      --panel: rgba(255,255,255,.075);
-      --panel-strong: rgba(255,255,255,.12);
-      --text: #f5f3ff;
-      --muted: #a5a7bd;
-      --border: rgba(255,255,255,.14);
-      --code-bg: #141625;
-      --keyword: #c4a7ff;
-      --string: #a6e3a1;
-      --comment: #7f849c;
-      --number: #f9d38c;
-      --variable: #89dceb;
-      --function: #91d7ff;
-      --type: #f2cdcd;
-      --operator: #f5c2e7;
-    }
-
-    * { box-sizing: border-box; }
-    html, body { margin: 0; min-height: 100%; background: radial-gradient(circle at top left, rgba(167,139,250,.25), transparent 34rem), var(--bg); color: var(--text); font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
-    body { padding: max(16px, env(safe-area-inset-top)) 12px max(24px, env(safe-area-inset-bottom)); }
-    button, select, textarea, input { font: inherit; }
-    .app { width: min(1160px, 100%); margin: 0 auto; display: grid; gap: 12px; }
-    .hero, .toolbar, .card { border: 1px solid var(--border); background: var(--panel); backdrop-filter: blur(18px); box-shadow: 0 24px 80px rgba(0,0,0,.34); }
-    .hero { border-radius: 24px; padding: 18px; }
-    .title { margin: 0; font-size: clamp(2rem, 8vw, 4rem); line-height: .9; letter-spacing: -.075em; }
-    .subtitle { margin: 10px 0 0; color: var(--muted); line-height: 1.45; }
-    .toolbar { border-radius: 20px; padding: 10px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
-    .control, .button, .url-input { min-height: 44px; border-radius: 15px; border: 1px solid var(--border); background: var(--panel-strong); color: var(--text); outline: none; }
-    .control { padding: 0 12px; }
-    .url-input { flex: 1 1 260px; padding: 0 12px; min-width: 0; }
-    .button { display: inline-flex; align-items: center; justify-content: center; gap: 7px; padding: 0 12px; cursor: pointer; }
-    .button.primary { background: linear-gradient(135deg, color-mix(in srgb, var(--accent), transparent 14%), rgba(255,255,255,.11)); font-weight: 800; }
-    .grid { display: grid; grid-template-columns: minmax(0, .95fr) minmax(0, 1.05fr); gap: 12px; }
-    @media (max-width: 860px) { .grid { grid-template-columns: 1fr; } }
-    .card { min-width: 0; border-radius: 24px; overflow: hidden; }
-    .card-header { display: flex; align-items: center; justify-content: space-between; padding: 12px 14px; border-bottom: 1px solid var(--border); }
-    .card-title { margin: 0; color: var(--muted); text-transform: uppercase; letter-spacing: .03em; font-size: .86rem; }
-    textarea, .ProseMirror { width: 100%; min-height: 58vh; padding: 16px; color: #f6f0ff; background: var(--code-bg); border: 0; outline: none; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; font-size: 13px; line-height: 1.58; tab-size: 2; }
-    textarea { resize: vertical; white-space: pre; overflow: auto; }
-    .editor-host { min-height: 58vh; background: var(--code-bg); overflow: auto; }
-    .ProseMirror { white-space: pre-wrap; word-break: break-word; }
-    .ProseMirror pre { margin: 0; white-space: pre-wrap; }
-    .pm-code-keyword { color: var(--keyword); font-weight: 760; }
-    .pm-code-string { color: var(--string); }
-    .pm-code-comment { color: var(--comment); font-style: italic; }
-    .pm-code-number { color: var(--number); }
-    .pm-code-variable { color: var(--variable); }
-    .pm-code-function { color: var(--function); }
-    .pm-code-type { color: var(--type); font-weight: 680; }
-    .pm-code-operator { color: var(--operator); }
-    .status { min-height: 28px; color: var(--muted); font-size: .88rem; line-height: 1.45; padding: 0 4px; }
-    .status strong { color: var(--text); }
-    .hidden-file { display: none; }
-  </style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover" />
+<meta name="theme-color" content="#050505" />
+<link rel="manifest" href="./manifest.webmanifest" />
+<title>Code Glass</title>
+<style>
+:root{
+--bg:#050505;
+--text:#fafafa;
+--muted:#a1a1aa;
+}
+*{
+box-sizing:border-box;
+-webkit-tap-highlight-color:transparent;
+}
+html,body{
+margin:0;
+height:100%;
+overflow:hidden;
+background:
+radial-gradient(circle at top left, rgba(139,92,246,.18), transparent 28rem),
+radial-gradient(circle at bottom right, rgba(59,130,246,.12), transparent 24rem),
+var(--bg);
+color:var(--text);
+font-family:Inter,system-ui,sans-serif;
+touch-action:manipulation;
+}
+body::before{
+content:"";
+position:fixed;
+inset:0;
+pointer-events:none;
+opacity:.06;
+background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='.8'/%3E%3C/svg%3E");
+}
+app-root{
+display:block;
+height:100dvh;
+}
+</style>
 </head>
 <body>
-  <main class="app">
-    <section class="hero">
-      <h1 class="title">Code Pretty Offline</h1>
-      <p class="subtitle">Paste code, fetch code from a URL, receive code through the URL itself, format when possible, then render inside ProseMirror with offline fallback highlighting.</p>
-    </section>
+<app-root></app-root>
 
-    <section class="toolbar">
-      <select id="language" class="control" aria-label="Language">
-        <option value="typescript">TypeScript</option>
-        <option value="javascript">JavaScript</option>
-        <option value="json">JSON</option>
-        <option value="html">HTML</option>
-        <option value="css">CSS</option>
-        <option value="markdown">Markdown</option>
-        <option value="go">Go</option>
-        <option value="bash">Bash</option>
-        <option value="zsh">Zsh</option>
-        <option value="shell">Shell</option>
-      </select>
+<script type="module">
+import { LitElement, html, css } from "https://esm.sh/lit@3.3.0";
+import { EditorState } from "https://esm.sh/@codemirror/state@6.5.2";
+import { EditorView, keymap, lineNumbers } from "https://esm.sh/@codemirror/view@6.38.6";
+import { defaultKeymap, history, historyKeymap } from "https://esm.sh/@codemirror/commands@6.8.1";
+import { javascript } from "https://esm.sh/@codemirror/lang-javascript@6.2.4";
+import { json } from "https://esm.sh/@codemirror/lang-json@6.0.2";
+import { html as htmlLang } from "https://esm.sh/@codemirror/lang-html@6.4.9";
+import { css as cssLang } from "https://esm.sh/@codemirror/lang-css@6.3.1";
+import { markdown } from "https://esm.sh/@codemirror/lang-markdown@6.3.4";
+import { go } from "https://esm.sh/@codemirror/lang-go@6.0.2";
+import { StreamLanguage } from "https://esm.sh/@codemirror/language@6.11.3";
+import { shell } from "https://esm.sh/@codemirror/legacy-modes/mode/shell";
+import { lintGutter, linter } from "https://esm.sh/@codemirror/lint@6.8.5";
 
-      <input id="urlInput" class="url-input" placeholder="Paste raw URL here, or open with ?url=..." />
-      <button id="fetchButton" class="button" type="button">🌐 Fetch URL</button>
-      <button id="formatButton" class="button primary" type="button">✨ Format + Highlight</button>
-      <button id="copyButton" class="button" type="button">📋 Copy</button>
-      <button id="shareButton" class="button" type="button">🔗 Code URL</button>
-      <label class="button" for="fileInput">📄 File</label>
-      <input id="fileInput" class="hidden-file" type="file" />
-    </section>
+const shellLang = StreamLanguage.define(shell);
 
-    <section class="grid">
-      <article class="card">
-        <header class="card-header"><h2 class="card-title">Input</h2></header>
-        <textarea id="sourceInput" spellcheck="false"></textarea>
-      </article>
+function detectLanguage(code="", fileName=""){
+const lower = fileName.toLowerCase();
 
-      <article class="card">
-        <header class="card-header"><h2 class="card-title">ProseMirror Output</h2></header>
-        <div id="editor" class="editor-host"></div>
-      </article>
-    </section>
+if(lower.endsWith(".ts")) return "typescript";
+if(lower.endsWith(".js")) return "javascript";
+if(lower.endsWith(".json")) return "json";
+if(lower.endsWith(".html")) return "html";
+if(lower.endsWith(".css")) return "css";
+if(lower.endsWith(".md")) return "markdown";
+if(lower.endsWith(".go")) return "go";
+if(lower.endsWith(".sh") || lower.endsWith(".zsh")) return "shell";
 
-    <p id="status" class="status">Installing offline cache...</p>
-  </main>
+if(code.startsWith("#!/usr/bin/env bash")) return "shell";
+if(code.startsWith("#!/usr/bin/env zsh")) return "shell";
+if(code.includes("package main")) return "go";
 
-  <script type="module">
-    import prettier from "https://esm.sh/prettier@3.6.2/standalone";
-    import prettierPluginBabel from "https://esm.sh/prettier@3.6.2/plugins/babel";
-    import prettierPluginEstree from "https://esm.sh/prettier@3.6.2/plugins/estree";
-    import prettierPluginTypescript from "https://esm.sh/prettier@3.6.2/plugins/typescript";
-    import prettierPluginHtml from "https://esm.sh/prettier@3.6.2/plugins/html";
-    import prettierPluginPostcss from "https://esm.sh/prettier@3.6.2/plugins/postcss";
-    import prettierPluginMarkdown from "https://esm.sh/prettier@3.6.2/plugins/markdown";
-
-    import { EditorState, Plugin } from "https://esm.sh/prosemirror-state@1.4.3";
-    import { EditorView, Decoration, DecorationSet } from "https://esm.sh/prosemirror-view@1.41.0";
-    import { Schema } from "https://esm.sh/prosemirror-model@1.25.0";
-    import { schema as basicSchema } from "https://esm.sh/prosemirror-schema-basic@1.2.4";
-    import { history, undo, redo } from "https://esm.sh/prosemirror-history@1.4.1";
-    import { keymap } from "https://esm.sh/prosemirror-keymap@1.2.3";
-    import { baseKeymap } from "https://esm.sh/prosemirror-commands@1.7.1";
-
-    const DEFAULT_CODE = `type User = {
-  id: string
-  name: string
-  active?: boolean
+return "javascript";
 }
 
-export async function greet(user: User) {
-  if (!user.active) {
-    return "sleeping dragon"
-  }
-
-  return \`hello, \${user.name}\`
+function getLanguageExtension(language){
+switch(language){
+case "typescript":
+return javascript({typescript:true});
+case "javascript":
+return javascript();
+case "json":
+return json();
+case "html":
+return htmlLang();
+case "css":
+return cssLang();
+case "markdown":
+return markdown();
+case "go":
+return go();
+case "shell":
+return shellLang;
+default:
+return javascript();
 }
-`;
-
-    const els = {
-      source: document.querySelector("#sourceInput"),
-      language: document.querySelector("#language"),
-      url: document.querySelector("#urlInput"),
-      fetch: document.querySelector("#fetchButton"),
-      format: document.querySelector("#formatButton"),
-      copy: document.querySelector("#copyButton"),
-      share: document.querySelector("#shareButton"),
-      file: document.querySelector("#fileInput"),
-      status: document.querySelector("#status"),
-      editor: document.querySelector("#editor"),
-    };
-
-    let activeLanguage = "typescript";
-
-    const codeSchema = new Schema({
-      nodes: basicSchema.spec.nodes,
-      marks: basicSchema.spec.marks,
-    });
-
-    const highlightPlugin = new Plugin({
-      props: {
-        decorations(state) {
-          return createHighlightDecorations(state.doc, activeLanguage);
-        },
-      },
-    });
-
-    const editorView = new EditorView(els.editor, {
-      state: EditorState.create({
-        schema: codeSchema,
-        doc: createCodeDocument(DEFAULT_CODE),
-        plugins: [
-          history(),
-          keymap({ "Mod-z": undo, "Mod-y": redo, "Shift-Mod-z": redo }),
-          keymap(baseKeymap),
-          highlightPlugin,
-        ],
-      }),
-    });
-
-    els.source.value = DEFAULT_CODE;
-
-    await registerServiceWorker();
-    await hydrateFromUrlParams();
-
-    els.format.addEventListener("click", formatAndRender);
-    els.fetch.addEventListener("click", () => fetchCodeFromUrl(els.url.value));
-    els.copy.addEventListener("click", async () => {
-      await navigator.clipboard.writeText(getEditorCode());
-      setStatus("Copied formatted code.");
-    });
-
-    els.share.addEventListener("click", async () => {
-      const url = createCodeUrl(els.source.value, els.language.value);
-      await navigator.clipboard.writeText(url);
-      setStatus("Copied URL containing this code.");
-    });
-
-    els.language.addEventListener("change", () => {
-      activeLanguage = normalizeLanguage(els.language.value);
-      renderCode(els.source.value);
-      setStatus(`Highlighting as <strong>${activeLanguage}</strong>.`);
-    });
-
-    els.file.addEventListener("change", async () => {
-      const file = els.file.files?.[0];
-      if (!file) return;
-
-      els.source.value = await file.text();
-      inferLanguage(file.name);
-      await formatAndRender();
-    });
-
-    async function registerServiceWorker() {
-      if (!("serviceWorker" in navigator)) {
-        setStatus("Service Worker is not available in this browser.");
-        return;
-      }
-
-      try {
-        const registration = await navigator.serviceWorker.register("./sw.js", { scope: "./" });
-        await navigator.serviceWorker.ready;
-        setStatus(`Offline cache ready. Scope: <strong>${escapeHtml(registration.scope)}</strong>`);
-      } catch (error) {
-        setStatus(`Offline cache failed: ${escapeHtml(error.message)}`);
-      }
-    }
-
-    async function hydrateFromUrlParams() {
-      const url = new URL(location.href);
-      const lang = url.searchParams.get("lang") || getHashParam("lang");
-
-      if (lang) {
-        els.language.value = normalizeLanguage(lang);
-        activeLanguage = normalizeLanguage(lang);
-      }
-
-      const remoteUrl = url.searchParams.get("url") || getHashParam("url");
-      const code = url.searchParams.get("code") || getHashParam("code");
-      const b64 = url.searchParams.get("b64") || getHashParam("b64");
-
-      if (remoteUrl) {
-        els.url.value = remoteUrl;
-        await fetchCodeFromUrl(remoteUrl);
-        return;
-      }
-
-      if (b64) {
-        els.source.value = decodeBase64Url(b64);
-        await formatAndRender();
-        return;
-      }
-
-      if (code) {
-        els.source.value = decodeURIComponent(code);
-        await formatAndRender();
-      }
-    }
-
-    async function fetchCodeFromUrl(rawUrl) {
-      const sourceUrl = String(rawUrl || "").trim();
-
-      if (!sourceUrl) {
-        setStatus("Paste a URL first.");
-        return;
-      }
-
-      try {
-        const response = await fetch(sourceUrl, { cache: "force-cache" });
-
-        if (!response.ok) {
-          throw new Error(`HTTP ${response.status}`);
-        }
-
-        els.source.value = await response.text();
-        inferLanguage(sourceUrl);
-        await formatAndRender();
-        setStatus(`Loaded code from <strong>${escapeHtml(sourceUrl)}</strong>.`);
-      } catch (error) {
-        setStatus(`Could not fetch URL. CORS may block it. ${escapeHtml(error.message)}`);
-      }
-    }
-
-    async function formatAndRender() {
-      activeLanguage = normalizeLanguage(els.language.value);
-
-      try {
-        const formatted = await formatCode(els.source.value, activeLanguage);
-        els.source.value = formatted;
-        renderCode(formatted);
-
-        const mode = getPrettierParser(activeLanguage) ? "Prettier" : "fallback normalizer";
-        setStatus(`Formatted with <strong>${mode}</strong> and highlighted as <strong>${activeLanguage}</strong>.`);
-      } catch (error) {
-        renderCode(els.source.value);
-        setStatus(`Format failed, highlight still ran. ${escapeHtml(error.message)}`);
-      }
-    }
-
-    async function formatCode(code, language) {
-      const parser = getPrettierParser(language);
-
-      if (!parser) {
-        return softNormalizeCode(code);
-      }
-
-      return prettier.format(code, {
-        parser,
-        plugins: [
-          prettierPluginBabel,
-          prettierPluginEstree,
-          prettierPluginTypescript,
-          prettierPluginHtml,
-          prettierPluginPostcss,
-          prettierPluginMarkdown,
-        ],
-        semi: true,
-        singleQuote: false,
-        trailingComma: "all",
-        printWidth: 92,
-      });
-    }
-
-    function getPrettierParser(language) {
-      return {
-        typescript: "typescript",
-        javascript: "babel",
-        json: "json",
-        html: "html",
-        css: "css",
-        markdown: "markdown",
-      }[language] || null;
-    }
-
-    function normalizeLanguage(language) {
-      const value = String(language || "").toLowerCase().trim();
-
-      if (["ts", "tsx", "typescript"].includes(value)) return "typescript";
-      if (["js", "jsx", "javascript"].includes(value)) return "javascript";
-      if (["json"].includes(value)) return "json";
-      if (["html", "htm"].includes(value)) return "html";
-      if (["css"].includes(value)) return "css";
-      if (["md", "markdown"].includes(value)) return "markdown";
-      if (["go", "golang"].includes(value)) return "go";
-      if (["bash"].includes(value)) return "bash";
-      if (["zsh"].includes(value)) return "zsh";
-      if (["sh", "shell"].includes(value)) return "shell";
-
-      return "typescript";
-    }
-
-    function renderCode(code) {
-      const nextState = EditorState.create({
-        schema: codeSchema,
-        doc: createCodeDocument(code),
-        plugins: editorView.state.plugins,
-      });
-
-      editorView.updateState(nextState);
-    }
-
-    function createCodeDocument(code) {
-      return codeSchema.nodes.doc.create(null, [
-        codeSchema.nodes.code_block.create(null, codeSchema.text(String(code || ""))),
-      ]);
-    }
-
-    function getEditorCode() {
-      return editorView.state.doc.textBetween(0, editorView.state.doc.content.size, "\n");
-    }
-
-    function createHighlightDecorations(doc, language) {
-      const decorations = [];
-
-      doc.descendants((node, position) => {
-        if (node.type.name !== "code_block") return true;
-
-        const offset = position + 1;
-
-        for (const token of tokenizeCode(node.textContent, language)) {
-          decorations.push(Decoration.inline(offset + token.start, offset + token.end, {
-            class: token.className,
-          }));
-        }
-
-        return false;
-      });
-
-      return DecorationSet.create(doc, decorations);
-    }
-
-    function tokenizeCode(code, language) {
-      const tokens = [];
-      const occupied = new Uint8Array(code.length);
-
-      for (const pattern of getLanguagePatterns(language)) {
-        pattern.regex.lastIndex = 0;
-
-        for (const match of code.matchAll(pattern.regex)) {
-          const value = match[0];
-          const start = match.index ?? 0;
-          const end = start + value.length;
-
-          if (!value || hasOverlap(occupied, start, end)) continue;
-
-          markOccupied(occupied, start, end);
-          tokens.push({ start, end, className: pattern.className });
-        }
-      }
-
-      return tokens.sort((left, right) => left.start - right.start);
-    }
-
-    function getLanguagePatterns(language) {
-      const common = [
-        { regex: /("(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|`(?:\\.|[^`\\])*`)/g, className: "pm-code-string" },
-        { regex: /(\/\/[^\n]*|#[^\n]*|\/\*[\s\S]*?\*\/)/g, className: "pm-code-comment" },
-        { regex: /\b(\d+(?:\.\d+)?)\b/g, className: "pm-code-number" },
-      ];
-
-      if (["typescript", "javascript"].includes(language)) {
-        return [
-          ...common,
-          { regex: /\b(type|interface|class|enum|namespace|abstract|implements|extends|readonly|private|protected|public|static|const|let|var|function|return|if|else|for|while|do|switch|case|break|continue|import|export|from|as|async|await|new|throw|try|catch|finally|true|false|null|undefined|void|never|unknown|any|string|number|boolean)\b/g, className: "pm-code-keyword" },
-          { regex: /\b([A-Z][A-Za-z0-9_]*)(?=\b)/g, className: "pm-code-type" },
-          { regex: /\b([A-Za-z_$][A-Za-z0-9_$]*)(?=\s*\()/g, className: "pm-code-function" },
-        ];
-      }
-
-      if (language === "go") {
-        return [
-          ...common,
-          { regex: /\b(package|import|func|return|if|else|for|range|go|defer|select|case|switch|struct|interface|type|var|const|map|chan|true|false|nil|string|int|int64|float64|bool|error)\b/g, className: "pm-code-keyword" },
-          { regex: /\b([A-Z][A-Za-z0-9_]*)(?=\b)/g, className: "pm-code-type" },
-          { regex: /\b([A-Za-z_][A-Za-z0-9_]*)(?=\s*\()/g, className: "pm-code-function" },
-        ];
-      }
-
-      if (["bash", "zsh", "shell"].includes(language)) {
-        return [
-          ...common,
-          { regex: /\b(if|then|else|elif|fi|for|while|until|do|done|case|esac|function|local|typeset|declare|export|return|exit|source|alias|unalias|autoload|zstyle|bindkey|setopt|unsetopt)\b/g, className: "pm-code-keyword" },
-          { regex: /(\$[A-Za-z_][A-Za-z0-9_]*|\$\{[^}]+\}|\$\?|\$#|\$@|\$\*)/g, className: "pm-code-variable" },
-          { regex: /(&&|\|\||==|!=|=~|[|&;<>])/g, className: "pm-code-operator" },
-        ];
-      }
-
-      return common;
-    }
-
-    function inferLanguage(value) {
-      const lower = String(value || "").toLowerCase();
-
-      if (lower.endsWith(".go")) els.language.value = "go";
-      else if (lower.endsWith(".zsh")) els.language.value = "zsh";
-      else if (lower.endsWith(".sh") || lower.endsWith(".bash")) els.language.value = "bash";
-      else if (lower.endsWith(".json")) els.language.value = "json";
-      else if (lower.endsWith(".html") || lower.endsWith(".htm")) els.language.value = "html";
-      else if (lower.endsWith(".css")) els.language.value = "css";
-      else if (lower.endsWith(".md")) els.language.value = "markdown";
-      else if (lower.endsWith(".js") || lower.endsWith(".jsx")) els.language.value = "javascript";
-      else els.language.value = "typescript";
-
-      activeLanguage = normalizeLanguage(els.language.value);
-    }
-
-    function createCodeUrl(code, language) {
-      const url = new URL(location.href);
-      url.search = "";
-      url.hash = `lang=${encodeURIComponent(language)}&b64=${encodeURIComponent(encodeBase64Url(code))}`;
-      return url.toString();
-    }
-
-    function getHashParam(name) {
-      const hash = location.hash.startsWith("#") ? location.hash.slice(1) : location.hash;
-      return new URLSearchParams(hash).get(name);
-    }
-
-    function encodeBase64Url(value) {
-      const bytes = new TextEncoder().encode(String(value));
-      let binary = "";
-
-      for (const byte of bytes) binary += String.fromCharCode(byte);
-
-      return btoa(binary).replaceAll("+", "-").replaceAll("/", "_").replaceAll("=", "");
-    }
-
-    function decodeBase64Url(value) {
-      const padded = String(value).replaceAll("-", "+").replaceAll("_", "/").padEnd(Math.ceil(value.length / 4) * 4, "=");
-      const binary = atob(padded);
-      const bytes = Uint8Array.from(binary, char => char.charCodeAt(0));
-      return new TextDecoder().decode(bytes);
-    }
-
-    function softNormalizeCode(code) {
-      return String(code).replace(/\r\n/g, "\n").replace(/[ \t]+$/gm, "").trim().concat("\n");
-    }
-
-    function hasOverlap(occupied, start, end) {
-      for (let index = start; index < end; index += 1) {
-        if (occupied[index]) return true;
-      }
-      return false;
-    }
-
-    function markOccupied(occupied, start, end) {
-      for (let index = start; index < end; index += 1) occupied[index] = 1;
-    }
-
-    function setStatus(message) {
-      els.status.innerHTML = message;
-    }
-
-    function escapeHtml(value) {
-      return String(value).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
-    }
-  </script>
+}
+
+const THEME = EditorView.theme({
+"&":{height:"100%"},
+"&.cm-editor":{
+height:"100%",
+background:"#0a0a0a",
+color:"#fafafa"
+},
+".cm-scroller":{
+overflow:"auto",
+fontFamily:"ui-monospace,monospace",
+fontSize:"13px"
+},
+".cm-gutters":{
+background:"rgba(255,255,255,.03)",
+color:"#71717a",
+borderRight:"1px solid rgba(255,255,255,.08)"
+}
+});
+
+const SIMPLE_LINTER = linter(view => {
+const diagnostics = [];
+const text = view.state.doc.toString();
+
+if(text.includes("console.log")){
+diagnostics.push({
+from:text.indexOf("console.log"),
+to:text.indexOf("console.log")+11,
+severity:"warning",
+message:"console.log detected"
+});
+}
+
+return diagnostics;
+});
+
+class AppRoot extends LitElement{
+static styles = css\`
+:host{
+display:block;
+height:100%;
+}
+.layout{
+height:100%;
+display:grid;
+grid-template-rows:auto 1fr auto;
+gap:12px;
+padding:16px;
+}
+.hero{
+border:1px solid rgba(255,255,255,.08);
+background:rgba(255,255,255,.04);
+backdrop-filter:blur(18px);
+border-radius:24px;
+padding:18px;
+}
+h1{
+margin:0;
+font-size:clamp(2rem,8vw,4rem);
+letter-spacing:-.08em;
+}
+p{
+color:#a1a1aa;
+}
+.toolbar{
+display:flex;
+gap:8px;
+flex-wrap:wrap;
+}
+button,input{
+min-height:44px;
+border-radius:14px;
+border:1px solid rgba(255,255,255,.08);
+background:rgba(255,255,255,.06);
+color:white;
+padding:0 14px;
+}
+input{
+flex:1;
+}
+.editor{
+overflow:hidden;
+border-radius:24px;
+border:1px solid rgba(255,255,255,.08);
+}
+#editor{
+height:100%;
+}
+.footer{
+font-size:.85rem;
+color:#71717a;
+}
+\`;
+
+static properties = {
+status:{state:true},
+language:{state:true}
+};
+
+constructor(){
+super();
+this.status = "Ready";
+this.language = "javascript";
+}
+
+render(){
+return html\`
+<div class="layout">
+<div class="hero">
+<h1>Code Glass</h1>
+<p>Offline-first CodeMirror 6 playground.</p>
+
+<div class="toolbar">
+<button @click=\${this.loadSample}>🧪 Sample</button>
+<button @click=\${this.copyCode}>📋 Copy</button>
+<button @click=\${this.openFile}>📄 File</button>
+
+<input id="urlInput" placeholder="https://raw.githubusercontent.com/..."/>
+
+<button @click=\${this.fetchRemote}>🌐 Fetch</button>
+
+<input hidden id="fileInput" type="file" @change=\${this.onFileChange}/>
+</div>
+</div>
+
+<div class="editor">
+<div id="editor"></div>
+</div>
+
+<div class="footer">
+\${this.status} · \${this.language}
+</div>
+</div>
+\`;
+}
+
+firstUpdated(){
+this.blockZoom();
+this.setupEditor();
+this.registerSW();
+}
+
+blockZoom(){
+document.addEventListener("gesturestart", e => e.preventDefault());
+document.addEventListener("gesturechange", e => e.preventDefault());
+document.addEventListener("gestureend", e => e.preventDefault());
+}
+
+setupEditor(code='console.log("hello")'){
+this.language = detectLanguage(code);
+
+this.editorView = new EditorView({
+parent:this.renderRoot.querySelector("#editor"),
+state:EditorState.create({
+doc:code,
+extensions:[
+lineNumbers(),
+history(),
+keymap.of([
+...defaultKeymap,
+...historyKeymap
+]),
+THEME,
+lintGutter(),
+SIMPLE_LINTER,
+getLanguageExtension(this.language)
+]
+})
+});
+}
+
+replaceEditor(code, fileName=""){
+this.language = detectLanguage(code, fileName);
+
+this.editorView.destroy();
+
+this.renderRoot.querySelector("#editor").innerHTML = "";
+
+this.editorView = new EditorView({
+parent:this.renderRoot.querySelector("#editor"),
+state:EditorState.create({
+doc:code,
+extensions:[
+lineNumbers(),
+history(),
+keymap.of([
+...defaultKeymap,
+...historyKeymap
+]),
+THEME,
+lintGutter(),
+SIMPLE_LINTER,
+getLanguageExtension(this.language)
+]
+})
+});
+}
+
+loadSample(){
+const sample = '#!/usr/bin/env zsh\n\necho "hello"';
+
+this.replaceEditor(sample, "sample.zsh");
+
+this.status = "Sample loaded";
+}
+
+async copyCode(){
+await navigator.clipboard.writeText(
+this.editorView.state.doc.toString()
+);
+
+this.status = "Copied";
+}
+
+openFile(){
+this.renderRoot.querySelector("#fileInput").click();
+}
+
+async onFileChange(event){
+const file = event.target.files?.[0];
+
+if(!file){
+return;
+}
+
+const text = await file.text();
+
+this.replaceEditor(text, file.name);
+
+this.status = \`Loaded \${file.name}\`;
+}
+
+async fetchRemote(){
+const input = this.renderRoot.querySelector("#urlInput");
+
+if(!input.value){
+return;
+}
+
+try{
+const response = await fetch(input.value);
+const text = await response.text();
+
+this.replaceEditor(text, input.value);
+
+this.status = "Remote file loaded";
+}catch(error){
+this.status = error.message;
+}
+}
+
+async registerSW(){
+if(!("serviceWorker" in navigator)){
+return;
+}
+
+try{
+await navigator.serviceWorker.register("./sw.js");
+this.status = "Offline ready";
+}catch(error){
+this.status = error.message;
+}
+}
+}
+
+customElements.define("app-root", AppRoot);
+</script>
 </body>
 </html>
